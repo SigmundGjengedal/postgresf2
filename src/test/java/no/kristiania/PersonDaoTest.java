@@ -26,10 +26,12 @@ public class PersonDaoTest {
     // hjelpe metoder
     private Person examplePerson() {
         Person person = new Person();
-        person.setFirstName(pickOne());
-
+        person.setFirstName(pickOne("Sigmund", "Sigurd", "Harald", "Harry"));
+        person.setLastName(pickOne("Persson", "Olsen", "Stølsen", "Geiranger"));
         return person;
     }
+
+    public statis String pickOne()
 
     private DataSource createDatasource() {
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
