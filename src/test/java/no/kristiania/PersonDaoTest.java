@@ -1,6 +1,7 @@
 package no.kristiania;
 
 import org.junit.jupiter.api.Test;
+import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
 
@@ -24,10 +25,17 @@ public class PersonDaoTest {
 
     // hjelpe metoder
     private Person examplePerson() {
-        return new Person();
+        Person person = new Person();
+        person.setFirstName(pickOne());
+
+        return person;
     }
 
     private DataSource createDatasource() {
-        return null;
+        PGSimpleDataSource dataSource = new PGSimpleDataSource();
+        dataSource.setURL("jdbc:postgresql://localhost:5432/people_db");
+        dataSource.setUser("people_dbuser");
+        dataSource.setPassword("k%3'`(?Qu?");
+        return dataSource;
     }
 }
