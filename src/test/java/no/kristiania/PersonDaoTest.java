@@ -6,6 +6,7 @@ import org.postgresql.ds.PGSimpleDataSource;
 import javax.sql.DataSource;
 
 import java.sql.SQLException;
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +32,9 @@ public class PersonDaoTest {
         return person;
     }
 
-    public statis String pickOne()
+    public static String pickOne(String... alternatives){
+         return alternatives[new Random().nextInt(alternatives.length)];
+    }
 
     private DataSource createDatasource() {
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
