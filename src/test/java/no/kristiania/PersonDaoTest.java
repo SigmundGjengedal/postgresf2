@@ -4,11 +4,13 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 
+import java.sql.SQLException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PersonDaoTest {
     @Test
-    void shouldRetrieveSavedPersonFromDatabase() {
+    void shouldRetrieveSavedPersonFromDatabase() throws SQLException {
         PersonDao dao = new PersonDao(createDatasource() );
         Person person = examplePerson(); // hp for å lage random person.
         dao.save(person);
