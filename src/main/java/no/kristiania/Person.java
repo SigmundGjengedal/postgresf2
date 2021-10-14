@@ -6,7 +6,7 @@ public class Person {
     private String firstName;
     private String lastName;
 
-    // må ha constructor
+    // må ha constructor ?
 
     public Long getId() {
         return id;

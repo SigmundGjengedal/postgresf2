@@ -24,6 +24,10 @@ public class PersonDaoTest {
         ;
     }
 
+    @Test
+    void name() {
+    }
+
     // hjelpe metoder
     private Person examplePerson() {
         Person person = new Person();
