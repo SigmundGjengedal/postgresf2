@@ -3,7 +3,6 @@ package no.kristiania;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PersonDao {
 
@@ -40,14 +39,14 @@ public class PersonDao {
                 // henter og setter data fra et resultset fra query
                 try (ResultSet resultSet = statement.executeQuery()) {
                     resultSet.next();
-                    return saveFromResultSet(resultSet);
+                    return mapPersonFromResultSet(resultSet);
 
                 }
             }
         }
     }
 
-    private Person saveFromResultSet(ResultSet resultSet) throws SQLException {
+    private Person mapPersonFromResultSet(ResultSet resultSet) throws SQLException {
         Person person = new Person();
         person.setId(resultSet.getLong("id")); // setter id og navn i objektet
         person.setFirstName(resultSet.getString("first_name"));
@@ -63,7 +62,7 @@ public class PersonDao {
                 try (ResultSet resultSet = statement.executeQuery()) {
                     ArrayList<Person> matchingPersonsList = new ArrayList<>();
                     while(resultSet.next()){
-                        matchingPersonsList.add(saveFromResultSet(resultSet));
+                        matchingPersonsList.add(mapPersonFromResultSet(resultSet));
                     }
                     return matchingPersonsList;
 
