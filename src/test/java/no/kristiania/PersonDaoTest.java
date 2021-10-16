@@ -11,9 +11,10 @@ import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PersonDaoTest {
+    private final PersonDao dao = new PersonDao(createDatasource() );
     @Test
     void shouldRetrieveSavedPersonFromDatabase() throws SQLException {
-        PersonDao dao = new PersonDao(createDatasource() );
+
         Person person = examplePerson(); // hp for å lage random person.
         dao.save(person);
 
@@ -23,7 +24,28 @@ public class PersonDaoTest {
                 .isEqualTo(person)
         ;
     }
+    @Test
+    void shouldListPeopleByLastName() throws SQLException {
+        // må simulere tre personer, der to av tre skal listes ut av metoden.
+        // 1
+        Person matchingPerson = examplePerson(); // hp for å lage random person.
+        matchingPerson.setLastName("Testperson"); //  overskriver etternavn for testen
+        dao.save(matchingPerson);
+        // 2
+        Person anotherMatchingPerson = examplePerson(); // hp for å lage random person.
+        anotherMatchingPerson.setLastName(matchingPerson.getLastName()); // samme som forrige
+        dao.save(anotherMatchingPerson);
+        // 3 lager ikke matchende for å teste metoden:
+        Person nonMatchingPerson = examplePerson();
+        dao.save(nonMatchingPerson);
 
+        // kaller metoden vi skal teste.
+        assertThat(dao.listByLastName(matchingPerson.getLastName()))
+                .extracting(Person::getId)
+                .contains(matchingPerson.getId(),anotherMatchingPerson.getId())
+                .doesNotContain(nonMatchingPerson.getId()) ;
+
+    }
     // hjelpe metoder
     private Person examplePerson() {
         Person person = new Person();

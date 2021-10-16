@@ -2,6 +2,8 @@ package no.kristiania;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PersonDao {
 
@@ -38,14 +40,37 @@ public class PersonDao {
                 // henter og setter data fra et resultset fra query
                 try (ResultSet resultSet = statement.executeQuery()) {
                     resultSet.next();
-                    Person coolPerson = new Person();
-                    coolPerson.setId(resultSet.getLong("id")); // setter id og navn i objektet
-                    coolPerson.setFirstName(resultSet.getString("first_name"));
-                    coolPerson.setLastName(resultSet.getString("last_name"));
-                    return coolPerson;
+                    return saveFromResultSet(resultSet);
 
                 }
             }
         }
+    }
+
+    private Person saveFromResultSet(ResultSet resultSet) throws SQLException {
+        Person person = new Person();
+        person.setId(resultSet.getLong("id")); // setter id og navn i objektet
+        person.setFirstName(resultSet.getString("first_name"));
+        person.setLastName(resultSet.getString("last_name"));
+        return person;
+    }
+
+    public ArrayList<Person> listByLastName(String lastName) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("select * from person where last_name = ? ")) {
+                statement.setString(1, lastName);
+                // henter og setter data fra et resultset fra query
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    ArrayList<Person> matchingPersonsList = new ArrayList<>();
+                    while(resultSet.next()){
+                        matchingPersonsList.add(saveFromResultSet(resultSet));
+                    }
+                    return matchingPersonsList;
+
+                }
+            }
+
+        }
+
     }
 }
