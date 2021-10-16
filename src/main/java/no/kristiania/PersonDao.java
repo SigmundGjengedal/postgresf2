@@ -1,8 +1,11 @@
 package no.kristiania;
 
+import org.postgresql.ds.PGSimpleDataSource;
+
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class PersonDao {
 
@@ -11,6 +14,14 @@ public class PersonDao {
     // konst
     public PersonDao(DataSource dataSource) {
         this.dataSource=dataSource;
+    }
+
+    public static DataSource createDataSource() {
+        PGSimpleDataSource dataSource = new PGSimpleDataSource();
+        dataSource.setURL("jdbc:postgresql://localhost:5432/people_db");
+        dataSource.setUser("people_dbuser");
+        dataSource.setPassword("k%3'`(?Qu?");
+        return dataSource;
     }
 
     // skal lagre en person, når den tar inn en person.
@@ -65,11 +76,17 @@ public class PersonDao {
                         matchingPersonsList.add(mapPersonFromResultSet(resultSet));
                     }
                     return matchingPersonsList;
-
                 }
             }
-
         }
+    }
 
+    public static void main(String[] args) throws SQLException {
+        // prøver å liste ut personer som finnes fra main
+        PersonDao dao = new PersonDao(createDataSource());
+        System.out.println("Please enter a last name: ");
+        Scanner scanner =  new Scanner(System.in);
+        String lastname = scanner.nextLine().trim();
+        System.out.println(dao.listByLastName(lastname));
     }
 }

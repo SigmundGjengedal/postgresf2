@@ -1,9 +1,6 @@
 package no.kristiania;
 
 import org.junit.jupiter.api.Test;
-import org.postgresql.ds.PGSimpleDataSource;
-
-import javax.sql.DataSource;
 
 import java.sql.SQLException;
 import java.util.Random;
@@ -11,7 +8,7 @@ import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PersonDaoTest {
-    private final PersonDao dao = new PersonDao(createDatasource() );
+    private final PersonDao dao = new PersonDao(PersonDao.createDataSource() );
     @Test
     void shouldRetrieveSavedPersonFromDatabase() throws SQLException {
 
@@ -58,11 +55,4 @@ public class PersonDaoTest {
          return alternatives[new Random().nextInt(alternatives.length)];
     }
 
-    private DataSource createDatasource() {
-        PGSimpleDataSource dataSource = new PGSimpleDataSource();
-        dataSource.setURL("jdbc:postgresql://localhost:5432/people_db");
-        dataSource.setUser("people_dbuser");
-        dataSource.setPassword("k%3'`(?Qu?");
-        return dataSource;
-    }
 }
