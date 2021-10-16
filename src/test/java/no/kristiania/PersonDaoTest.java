@@ -1,14 +1,26 @@
 package no.kristiania;
 
+import org.flywaydb.core.Flyway;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PersonDaoTest {
-    private final PersonDao dao = new PersonDao(PersonDao.createDataSource() );
+    private final PersonDao dao = new PersonDao(testDataSource() );
+
+    private DataSource testDataSource() {
+        JdbcDataSource dataSource = new JdbcDataSource();
+        dataSource.setURL("jdbc:h2:mem:persondb;DB_CLOSE_DELAY=-1")   ;
+
+
+    return dataSource;
+    }
+
     @Test
     void shouldRetrieveSavedPersonFromDatabase() throws SQLException {
 
@@ -55,4 +67,4 @@ public class PersonDaoTest {
          return alternatives[new Random().nextInt(alternatives.length)];
     }
 
-}
+  }
