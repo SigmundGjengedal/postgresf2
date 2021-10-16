@@ -1,7 +1,12 @@
 package no.kristiania;
 
+import org.flywaydb.core.Flyway;
+import org.postgresql.ds.PGSimpleDataSource;
+
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class PersonDao {
 
@@ -10,6 +15,18 @@ public class PersonDao {
     // konst
     public PersonDao(DataSource dataSource) {
         this.dataSource=dataSource;
+    }
+
+    public static DataSource createDataSource() {
+        PGSimpleDataSource dataSource = new PGSimpleDataSource();
+        dataSource.setURL("jdbc:postgresql://localhost:5432/people_db");
+        dataSource.setUser("people_dbuser");
+        dataSource.setPassword("k%3'`(?Qu?");
+
+        // Flyway bibliotek som migrere dataene til den siste versjonen av mine tabelldefinisjoner.
+        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+        flyway.migrate();
+        return dataSource;
     }
 
     // skal lagre en person, når den tar inn en person.
@@ -38,14 +55,43 @@ public class PersonDao {
                 // henter og setter data fra et resultset fra query
                 try (ResultSet resultSet = statement.executeQuery()) {
                     resultSet.next();
-                    Person coolPerson = new Person();
-                    coolPerson.setId(resultSet.getLong("id")); // setter id og navn i objektet
-                    coolPerson.setFirstName(resultSet.getString("first_name"));
-                    coolPerson.setLastName(resultSet.getString("last_name"));
-                    return coolPerson;
+                    return mapPersonFromResultSet(resultSet);
 
                 }
             }
         }
+    }
+
+    private Person mapPersonFromResultSet(ResultSet resultSet) throws SQLException {
+        Person person = new Person();
+        person.setId(resultSet.getLong("id")); // setter id og navn i objektet
+        person.setFirstName(resultSet.getString("first_name"));
+        person.setLastName(resultSet.getString("last_name"));
+        return person;
+    }
+
+    public ArrayList<Person> listByLastName(String lastName) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("select * from person where last_name = ? ")) {
+                statement.setString(1, lastName);
+                // henter og setter data fra et resultset fra query
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    ArrayList<Person> matchingPersonsList = new ArrayList<>();
+                    while(resultSet.next()){
+                        matchingPersonsList.add(mapPersonFromResultSet(resultSet));
+                    }
+                    return matchingPersonsList;
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) throws SQLException {
+        // prøver å liste ut personer som finnes fra main
+        PersonDao dao = new PersonDao(createDataSource());
+        System.out.println("Please enter a last name: ");
+        Scanner scanner =  new Scanner(System.in);
+        String lastname = scanner.nextLine().trim();
+        System.out.println(dao.listByLastName(lastname));
     }
 }
