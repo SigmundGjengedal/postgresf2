@@ -1,5 +1,6 @@
 package no.kristiania;
 
+import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
@@ -21,6 +22,10 @@ public class PersonDao {
         dataSource.setURL("jdbc:postgresql://localhost:5432/people_db");
         dataSource.setUser("people_dbuser");
         dataSource.setPassword("k%3'`(?Qu?");
+
+        // Flyway bibliotek som migrere dataene til den siste versjonen av mine tabelldefinisjoner.
+        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+        flyway.migrate();
         return dataSource;
     }
 
